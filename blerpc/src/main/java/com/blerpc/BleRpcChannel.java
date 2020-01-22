@@ -180,11 +180,24 @@ public class BleRpcChannel implements RpcChannel {
       SubscriptionCallsGroup subscription = getSubscribingSubscription(characteristicUuid);
       subscription.status = SubscriptionStatus.SUBSCRIBED;
       callOnSubscribeSuccess(rpcCall.controller);
+      logger.info(
+          "Enable subscription for "
+              + subscription.responsePrototype.getClass()
+              + " ("
+              + subscription.characteristicUuid
+              + ")");
     } else if (Arrays.equals(value, DISABLE_NOTIFICATION_VALUE)) {
       SubscriptionCallsGroup subscription = getUnsubscribingSubscription(characteristicUuid);
       subscription.status = SubscriptionStatus.UNSUBSCRIBED;
       // New rpc calls might have been added since we started unsubscribing.
       subscription.clearCanceled();
+      logger.info(
+          "Disable subscription for "
+              + subscription.responsePrototype.getClass()
+              + " ("
+              + subscription.characteristicUuid
+              + ")"
+              + (subscription.hasAnySubscriber() ? "" : ", will be removed"));
       if (!subscription.hasAnySubscriber()) {
         subscriptions.remove(subscription.characteristicUuid);
         return;
